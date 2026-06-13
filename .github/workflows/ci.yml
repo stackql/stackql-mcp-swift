@@ -1,14 +1,15 @@
 name: ci
 
-# Work happens on a long-lived feature branch (feature/embedded-swift-mcp);
-# CI runs on PRs to main, on pushes to main (the merge), and on release tags.
-# The package targets macOS and its only dependency is the MCP Swift SDK, so
-# every job runs on macOS runners.
+# Work happens on long-lived feature branches (feature/**), which may stack on
+# each other rather than always targeting main. CI runs on every PR, on pushes
+# to main (the merge) and to feature branches (so stacked branches are
+# validated even when their PR base is another feature branch), and on release
+# tags. The package targets macOS and its only dependency is the MCP Swift SDK,
+# so every job runs on macOS runners.
 on:
   pull_request:
-    branches: [main]
   push:
-    branches: [main]
+    branches: [main, 'feature/**']
     tags: ['v*']
 
 permissions:
