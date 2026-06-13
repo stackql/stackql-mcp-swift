@@ -21,12 +21,12 @@ public struct ExposurePulse: Pulse {
         WHERE cidr_ip = '0.0.0.0/0'
         """
         do {
-            let buckets = try await server.call("run_select_query", ["query": bucketSQL])
+            let buckets = try await server.call("run_select_query", stringArgs: ["query": bucketSQL])
             if buckets.isError {
                 return PulseResult(kind: kind, findings: [],
                                    error: PulseErrors.classify(buckets.text, provider: "AWS"))
             }
-            let sgs = try await server.call("run_select_query", ["query": sgSQL])
+            let sgs = try await server.call("run_select_query", stringArgs: ["query": sgSQL])
             if sgs.isError {
                 return PulseResult(kind: kind, findings: [],
                                    error: PulseErrors.classify(sgs.text, provider: "AWS"))

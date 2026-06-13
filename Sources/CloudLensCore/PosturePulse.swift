@@ -23,8 +23,8 @@ public struct PosturePulse: Pulse {
         WHERE org = '\(org)'
         """
         do {
-            _ = try await server.call("pull_provider", ["provider": "github"])
-            let result = try await server.call("run_select_query", ["query": sql])
+            _ = try await server.call("pull_provider", stringArgs: ["provider": "github"])
+            let result = try await server.call("run_select_query", stringArgs: ["query": sql])
             if result.isError {
                 return PulseResult(kind: kind, findings: [], error: result.text)
             }

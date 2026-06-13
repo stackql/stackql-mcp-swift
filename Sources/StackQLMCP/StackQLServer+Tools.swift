@@ -28,6 +28,28 @@ extension StackQLServer {
         return ToolResult(text: Self.joinText(content), isError: isError ?? false)
     }
 
+    /// Convenience overload for the common all-string-arguments case, so
+    /// callers can pass runtime `String` values without wrapping each in
+    /// `Value` (a `[String: String]` literal of runtime strings does not
+    /// implicitly convert to `[String: Value]`). Example:
+    /// `try await server.call("run_select_query", stringArgs: ["query": sql])`.
+    @discardableResult
+    public func call(_ name: String, stringArgs: [String: String]) async throws -> ToolResult {
+        let args = arguments(from: stringArgs)
+        return try await call(name, args)
+    }
+
+    /// Map a string dictionary to MCP `Value` arguments. Uses the
+    /// ExpressibleByStringLiteral initializer, which is part of Value's public
+    /// API, rather than assuming a specific enum case name.
+    static func valueArgs(_ stringArgs: [String: String]) -> [String: Value] {
+        stringArgs.mapValues { Value(stringLiteral: $0) }
+    }
+
+    private func arguments(from stringArgs: [String: String]) -> [String: Value] {
+        Self.valueArgs(stringArgs)
+    }
+
     /// Concatenate the text parts of tool content, one per line.
     static func joinText(_ content: [Tool.Content]) -> String {
         var lines: [String] = []

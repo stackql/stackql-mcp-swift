@@ -23,7 +23,7 @@ public struct SpendPulse: Pulse {
         ORDER BY amount DESC
         """
         do {
-            let result = try await server.call("run_select_query", ["query": sql])
+            let result = try await server.call("run_select_query", stringArgs: ["query": sql])
             if result.isError {
                 return PulseResult(kind: kind, findings: [],
                                    error: PulseErrors.classify(result.text, provider: "AWS"))
