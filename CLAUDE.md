@@ -68,8 +68,9 @@ on a Mac and will not open four consoles.
 
 ## Build and test
 
-- Swift 5.10+/Xcode current; SwiftPM for the package, Xcode project for the
-  app; deps: modelcontextprotocol/swift-sdk only
+- Swift 6.1+/Xcode 16.3+ (the MCP swift-sdk is a tools-version 6.1 package,
+  so 6.1 is the real floor), macOS 13+; SwiftPM for the package, Xcode
+  project for the app; deps: modelcontextprotocol/swift-sdk only
 - XCTest: locate/extract/cache unit tests + spawn/handshake/tools-list
   integration against the github fixture; CI on macos-latest runners
 - Release engineering doc: signing + notarising the demo app WITH the
