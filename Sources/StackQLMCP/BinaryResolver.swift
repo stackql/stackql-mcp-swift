@@ -88,7 +88,9 @@ public struct BinaryResolver {
     /// Resolve the binary using only the offline steps (1-3). Returns nil if
     /// none hit, so callers can decide whether to download.
     public func locateOffline() -> URL? {
-        if let override = binaryOverride {
+        // An empty override is treated as "no override": URL(fileURLWithPath:
+        // "") resolves to the cwd, which must not be mistaken for the binary.
+        if let override = binaryOverride, !override.isEmpty {
             let url = URL(fileURLWithPath: override)
             if fileManager.isExecutableFile(atPath: url.path) { return url }
         }
