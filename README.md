@@ -106,8 +106,8 @@ and the product:
 .product(name: "StackQLMCP", package: "stackql-mcp-swift")
 ```
 
-Requires macOS 13+ and Swift 6.0 (Xcode 16), inherited from the MCP Swift
-SDK, which is the only dependency.
+Requires macOS 13+ and Swift 6.1 (Xcode 16.3+), inherited from the MCP
+Swift SDK, which is the only dependency.
 
 ## Tests
 
