@@ -40,9 +40,15 @@ jobs:
       - name: Build
         run: swift build -v
 
-      # Unit suite: offline. Args/platform/pins/cache/sha/bundle-extraction.
-      # The conformance tests skip themselves unless STACKQL_MCP_INTEGRATION
-      # is set, so they are inert here.
+      # Build the CloudLens demo app executable explicitly so a GUI-target
+      # break is attributed clearly (swift build above already covers it).
+      - name: Build CloudLens demo app
+        run: swift build -v --product CloudLens
+
+      # Unit suite: offline. Covers the package (args/platform/pins/cache/sha/
+      # bundle-extraction) and CloudLensCore (pulse parsing, finding diff,
+      # agent prompt/response handling). The conformance tests skip themselves
+      # unless STACKQL_MCP_INTEGRATION is set, so they are inert here.
       - name: Unit tests
         run: swift test -v
 

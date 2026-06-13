@@ -17,7 +17,11 @@ let package = Package(
         .macOS(.v13)
     ],
     products: [
-        .library(name: "StackQLMCP", targets: ["StackQLMCP"])
+        .library(name: "StackQLMCP", targets: ["StackQLMCP"]),
+        // CloudLens: the menu bar cloud sentinel demo app. Built as a SwiftPM
+        // executable so CI can compile it; the signed/notarised .app is
+        // assembled in the packaging step documented in docs/.
+        .executable(name: "CloudLens", targets: ["CloudLens"]),
     ],
     dependencies: [
         .package(
@@ -35,6 +39,23 @@ let package = Package(
         .testTarget(
             name: "StackQLMCPTests",
             dependencies: ["StackQLMCP"]
-        )
+        ),
+        // CloudLensCore holds the testable app logic (pulses, finding diff,
+        // the Anthropic agent client, Keychain access) with no SwiftUI, so it
+        // can be unit-tested on CI without a GUI.
+        .target(
+            name: "CloudLensCore",
+            dependencies: ["StackQLMCP"]
+        ),
+        // CloudLens is the thin SwiftUI MenuBarExtra shell: @main App, menu
+        // bar icon state, popover, notifications.
+        .executableTarget(
+            name: "CloudLens",
+            dependencies: ["CloudLensCore", "StackQLMCP"]
+        ),
+        .testTarget(
+            name: "CloudLensCoreTests",
+            dependencies: ["CloudLensCore"]
+        ),
     ]
 )
