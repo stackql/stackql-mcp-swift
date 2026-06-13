@@ -72,8 +72,8 @@ public struct BundleFetcher: Sendable {
         if version == Pins.defaultVersion, let pin = Pins.bundleSHA256[platform] {
             return pin
         }
-        if let pin = try? await pinFromPlatformsJSON(version: version, platform: platform),
-           let pin {
+        // try? flattens the nested optional, so this is a single String?.
+        if let pin = try? await pinFromPlatformsJSON(version: version, platform: platform) {
             return pin
         }
         let name = Self.bundleName(platform) + ".sha256"
