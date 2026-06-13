@@ -1,0 +1,53 @@
+name: ci
+
+# Work happens on a long-lived feature branch (feature/embedded-swift-mcp);
+# CI runs on PRs to main, on pushes to main (the merge), and on release tags.
+# The package targets macOS and its only dependency is the MCP Swift SDK, so
+# every job runs on macOS runners.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Resolve dependencies
+        run: swift package resolve
+
+      - name: Build
+        run: swift build -v
+
+      # Unit suite: offline. Args/platform/pins/cache/sha/bundle-extraction.
+      # The conformance tests skip themselves unless STACKQL_MCP_INTEGRATION
+      # is set, so they are inert here.
+      - name: Unit tests
+        run: swift test -v
+
+      # Integration/conformance: downloads the release bundle for
+      # darwin-universal, verifies the published sha256 pin, spawns the server
+      # over stdio, and runs the sequence the packaging repo's smoke-test.py
+      # defines (initialize -> tools/list -> pull_provider github (null_auth)
+      # -> list_services), plus the read_only mutation-refusal check.
+      - name: Conformance tests (github null_auth fixture)
+        env:
+          STACKQL_MCP_INTEGRATION: '1'
+        run: swift test -v --filter ConformanceTests
